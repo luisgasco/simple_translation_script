@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# local files
+.env_simple_translation_script
+.vscode
+
 # Distribution / packaging
 .Python
 build/
