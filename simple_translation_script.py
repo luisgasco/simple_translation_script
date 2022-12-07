@@ -13,6 +13,17 @@ from transformers import pipeline
 import pandas as pd
 from optparse import OptionParser
 import torch
+from torch.utils.data import Dataset
+from tqdm.auto import tqdm
+class ListDataset(Dataset):
+     def __init__(self, original_list):
+        self.original_list = original_list
+     def __len__(self):
+        return len(self.original_list)
+
+     def __getitem__(self, i):
+        return self.original_list[i]
+
 
 def main(argv=None):
     parser = OptionParser()
@@ -50,13 +61,24 @@ def main(argv=None):
                             device= torch.device(0 if torch.cuda.is_available() else 'cpu') ) 
  
     # Traducir
-    #Change batch_size if you run it on better or worst GPUs
-    results = pipeline_mt(lines_to_translate, 
-                         batch_size=4)
+    inner_sub_list = 100
+    # Finalmente, subdividimos la lista en listas menores para aplicar tqdm
+    sublistas = [lines_to_translate[x:x+inner_sub_list] for x in range(0, len(lines_to_translate), inner_sub_list)]
+    
+    # Puede arrojar un warning por no ser eficiente con GPU, pero es mucho más rápido así que sin hacer
+    # las sublistas
+    lista_output = list()
+    for sublista in tqdm(sublistas, desc="Procesando sublistas de {} elementos".format(inner_sub_list)):
+        lista_output.extend(pipeline_mt(sublista, batch_size=4))
 
-    # Generamos lista de salida
+    # Old way to translate list without tqdm
+    # BAD PERFORMANCE with very big lists.
+    #results = pipeline_mt(lines_to_translate, 
+    #                    batch_size=4)
+
+    # Generamos lista final de salida
     # Next line is faster than translated_input = [t["translation_text"] for t in results] 
-    translated_input = list(map(lambda x: x["translation_text"], results))
+    translated_input = list(map(lambda x: x["translation_text"], lista_output))
     # Guardar archivo en el mismo formato que la entrada (dependerá de file_type)
     if options.file_type == "lines":
         with open(options.output_path, 'w') as output:

@@ -86,8 +86,8 @@ Here are some examples of how to run the script and use its different attributes
     --source_lang "es"\
     --target_lang "en"\
     --file_type "tsv"\
-    --input_path "toy_data/input_file_toy_tab.txt"\
-    --output_path "toy_data/output_file_tab.txt"\
+    --input_path "toy_data/input_file_toy_tab.tsv"\
+    --output_path "toy_data/output_file_tab.tsv"\
     --input_column "term"\
     --output_column "translated_en"
    ```
