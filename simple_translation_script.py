@@ -12,7 +12,7 @@ import sys
 from transformers import pipeline
 import pandas as pd
 from optparse import OptionParser
-
+import torch
 
 def main(argv=None):
     parser = OptionParser()
@@ -46,14 +46,15 @@ def main(argv=None):
     # Crear objeto de traducción
     pipeline_mt = pipeline(model = options.model_name,
                             src_lang = options.source_lang,
-                            tgt_lang = options.target_lang)
+                            tgt_lang = options.target_lang,
+                            device= torch.device(0 if torch.cuda.is_available() else 'cpu') ) #If you dont hace CPU, put the value "cpu"
 
     # Traducir
     results = pipeline_mt(lines_to_translate)
 
     # Generamos lista de salida
-    translated_input = [t["translation_text"] for t in results] 
-    
+    # Next line is faster than translated_input = [t["translation_text"] for t in results] 
+    translated_input = list(map(lambda x: x["translation_text"], results))
     # Guardar archivo en el mismo formato que la entrada (dependerá de file_type)
     if options.file_type == "lines":
         with open(options.output_path, 'w') as output:
