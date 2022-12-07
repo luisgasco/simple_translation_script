@@ -47,10 +47,12 @@ def main(argv=None):
     pipeline_mt = pipeline(model = options.model_name,
                             src_lang = options.source_lang,
                             tgt_lang = options.target_lang,
-                            device= torch.device(0 if torch.cuda.is_available() else 'cpu') ) #If you dont hace CPU, put the value "cpu"
-
+                            device= torch.device(0 if torch.cuda.is_available() else 'cpu') ) 
+ 
     # Traducir
-    results = pipeline_mt(lines_to_translate)
+    #Change batch_size if you run it on better or worst GPUs
+    results = pipeline_mt(lines_to_translate, 
+                         batch_size=64)
 
     # Generamos lista de salida
     # Next line is faster than translated_input = [t["translation_text"] for t in results] 
