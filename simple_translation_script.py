@@ -52,7 +52,7 @@ def main(argv=None):
     # Traducir
     #Change batch_size if you run it on better or worst GPUs
     results = pipeline_mt(lines_to_translate, 
-                         batch_size=64)
+                         batch_size=4)
 
     # Generamos lista de salida
     # Next line is faster than translated_input = [t["translation_text"] for t in results] 
