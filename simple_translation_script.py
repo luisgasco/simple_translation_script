@@ -46,6 +46,10 @@ def main(argv=None):
         else: 
             lines_to_translate = df_translate[options.input_column].to_list()
 
+    # Repalce nan values from lines_to_translete list. If pipeline_mt finds Nan, we will get 
+    # an error
+    lines_to_translate = ["" if x != x else x for x in lines_to_translate]
+
     # Crear objeto de traducción
     pipeline_mt = pipeline(model = options.model_name,
                             src_lang = options.source_lang,
